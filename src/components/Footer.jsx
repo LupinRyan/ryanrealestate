@@ -102,7 +102,7 @@ const Footer = () => {
                             <p className="copyright-text">
                                 &copy; {new Date().getFullYear()} Lupin's Crest Luxury Real Estate. All rights reserved.
                                 <span className="developer-credit">
-                                    Developed by <strong>Lupin. </strong>
+                                    Developed by <strong>Lupin </strong>
                                 </span>
                             </p>
                         </div>

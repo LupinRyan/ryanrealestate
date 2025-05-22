@@ -1,95 +1,139 @@
 import axios from 'axios';
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from './Footer';
+import { FaUser, FaLock, FaSpinner } from 'react-icons/fa';
+import { MdEmail } from 'react-icons/md';
 
 const Signin = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  // (2)Initialize hooks to help in storing data entered by the user on the form
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+  const login = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess("");
+    
+    try {
+      const data = new FormData();
+      data.append("email", email);
+      data.append("password", password);
 
-    // (3) Initialize 3 additional hooks to manage the state of the app
-    const [loading, setLoading] = useState("");
-    const [success, setSuccess] = useState("");
-    const [error, setError] = useState("");
+      const response = await axios.post("https://lup3n.pythonanywhere.com/api/signin", data);
 
-    // (16) Create a navigate hook that redirects a user to another page after a successful login
-    const navigate = useNavigate();
-
-    // (4)Create a function to hold the user Sign In
-    const login = async (e) => {
-
-        // (5) Prevent your site from reloading
-        e.preventDefault();
-
-        // (6) Update the loading hook with a message
-        setLoading("Please wait as we confirm your Signin details...")
-        try{
-            // (10) Create a form data object
-            const data = new FormData();
-
-            // (11)Add/append the different information onto the form data (email,password)
-            data.append("email",email);
-            data.append("password",password);
-
-            // (12) Post your data through your API
-            const response = await axios.post("https://lup3n.pythonanywhere.com/api/signin", data)
-
-            // (14) Check whether the details return for the API contain a key user
-            if(response.data.user){
-                setLoading("");
-                setSuccess("The Login was successful")
-
-                navigate("/");
-            }
-            else{
-                setLoading("");
-                setError("Invalid Login Details. Please try again...");
-            }
-        }
-        catch(error){
-            setLoading("");
-            setError(error.message);
-        }
+      if (response.data.user) {
+        setSuccess("Login successful! Redirecting...");
+        setTimeout(() => navigate("/"), 1500);
+      } else {
+        setError("Invalid email or password. Please try again.");
+      }
+    } catch (error) {
+      setError(error.response?.data?.message || "An error occurred during login.");
+    } finally {
+      setLoading(false);
     }
+  };
+
   return (
-    <div className="row justify-content-center mt-3">
-        <div className="col-md-6 row card shadow p-2">
-            <h1>Sign In</h1>
-
-            <b className="text-success">{loading}</b>
-            <b className="text-success">{success}</b>
-            <b className="text-danger">{error}</b>
-            
-            <form onSubmit={login}>
-                <input 
-                type="email"
-                placeholder='Enter Your Email Address'
-                required
-                className='form-control'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)} /> <br />
-
-                {/* {email} */}
-
-                <input 
-                type="password"
-                placeholder='Enter the password'
-                required
-                className='form-control'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)} /> <br />
-
-                {/* {password} */}
-
-                <input type="submit" value="Sign in" className='btn btn-outline-success' /> <br /> <br />
-                <p>Don't have an account? <Link to={'/signup'} className='text-info'>Sign Up</Link></p>
-            </form>
+    <div className="min-vh-100 d-flex flex-column">
+      <div className="flex-grow-1 d-flex align-items-center justify-content-center bg-light">
+        <div className="container">
+          <div className="row justify-content-center">
+            <div className="col-lg-6 col-md-8 col-sm-10">
+              <div className="card shadow-lg border-0 rounded-lg">
+                <div className="card-header bg-primary text-white">
+                  <h3 className="text-center font-weight-light my-4">
+                    <FaUser className="mr-2" /> Sign In
+                  </h3>
+                </div>
+                <div className="card-body">
+                  {success && (
+                    <div className="alert alert-success text-center">
+                      {success}
+                    </div>
+                  )}
+                  {error && (
+                    <div className="alert alert-danger text-center">
+                      {error}
+                    </div>
+                  )}
+                  
+                  <form onSubmit={login}>
+                    <div className="form-floating mb-3">
+                      <div className="input-group">
+                        <span className="input-group-text">
+                          <MdEmail />
+                        </span>
+                        <input
+                          type="email"
+                          className="form-control"
+                          id="inputEmail"
+                          placeholder="name@example.com"
+                          required
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <label htmlFor="inputEmail">Email address</label>
+                      </div>
+                    </div>
+                    
+                    <div className="form-floating mb-3">
+                      <div className="input-group">
+                        <span className="input-group-text">
+                          <FaLock />
+                        </span>
+                        <input
+                          type="password"
+                          className="form-control"
+                          id="inputPassword"
+                          placeholder="Password"
+                          required
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                        />
+                        <label htmlFor="inputPassword">Password</label>
+                      </div>
+                    </div>
+                    
+                    <div className="d-flex align-items-center justify-content-between mt-4 mb-0">
+                      <Link to="/signup" className="text-primary">
+                        Need an account? Sign Up
+                      </Link>
+                      <button
+                        type="submit"
+                        className="btn btn-primary"
+                        disabled={loading}
+                      >
+                        {loading ? (
+                          <>
+                            <FaSpinner className="fa-spin mr-2" />
+                            Signing In...
+                          </>
+                        ) : (
+                          'Sign In'
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+                <div className="card-footer text-center py-3">
+                  <Link to="/forgot-password" className="small">
+                    Forgot Password?
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <Footer/>
+      </div>
+      <Footer />
     </div>
-  )
-}
+  );
+};
 
 export default Signin;
