@@ -97,16 +97,21 @@ const AboutUs = () => {
                 <p className="mb-0 quote-text">
                   "Luxury isn't just a price point — it's a promise."
                 </p>
-                <footer className="blockquote-footer mt-3">Assane Lupin</footer>
+                <footer className="blockquote-footer mt-3">Ryan Junior</footer>
               </blockquote>
             </div>
 
             {/* Contact */}
             <div className="contact-section text-center p-4">
               <h3 className="mb-4">Ready to Begin Your Journey?</h3>
-              <a href="mailto:ryanj5245@gmail.com" className="contact-btn btn btn-outline-light">
-                <i className="fas fa-envelope mr-2"></i> ryanj5245@gmail.com
-              </a>
+              <a 
+  href="https://mail.google.com/mail/?view=cm&fs=1&to=ryanj5245@gmail.com" 
+  target="_blank" 
+  rel="noopener noreferrer" 
+  className="contact-btn btn btn-outline-dark"
+>
+  <i className="fas fa-envelope mr-2"></i> ryanj5245@gmail.com
+</a>
             </div>
           </div>
         </div>

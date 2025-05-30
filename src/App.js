@@ -1,7 +1,6 @@
-
-import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap/dist/js/bootstrap.min.js'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.min.js';
 import './App.css';
 import Gethouses from './components/Gethouses';
 import Addhouse from './components/Addhouse';
@@ -11,24 +10,16 @@ import Makepayment from './components/Makepayment';
 import Notfound from './components/Notfound';
 import Navbar from './components/Navbar';
 import AboutUs from './components/Aboutus';
+import Chatbot from './components/Chatbot';
+import Cart from './components/Cart';
+import Checkout from './components/Checkout';
+import Confirmation from './components/Confirmation'; // Import the Confirmation component
 
 function App() {
   return (
     <Router>
       <div className="App">
-        {/* <header className="App-header">
-          <h1>Lupin Crest Luxury Real Estate </h1>
-        </header> */}
-
         <Navbar/>
-
-        {/* Below are the links to the diffferent components
-        <nav>
-          <Link to={'/'} className='links'>Home</Link>
-          <Link to={'/addproduct'} className='links'>Add Product</Link>
-          <Link to={"/signup"} className='links'>Sign Up</Link>
-          <Link to={'/signin'} className='links'>Sign In</Link>
-        </nav> */}
 
         {/* Below are the different paths/urls */}
         <Routes>
@@ -37,8 +28,12 @@ function App() {
           <Route path='/signup' element={<Signup/>}/>
           <Route path='/signin' element={<Signin/>}/>
           <Route path='/makepayment' element={<Makepayment/>}/>
-          <Route path='/*' element={<Notfound/>}/>
           <Route path='/aboutus' element={<AboutUs/>}/>
+          <Route path='/chatbot' element={<Chatbot/>}/>
+          <Route path='/cart' element={<Cart/>}/>
+          <Route path='/checkout' element={<Checkout/>}/>
+          <Route path='/confirmation' element={<Confirmation/>}/> {/* Added Confirmation route */}
+          <Route path='/*' element={<Notfound/>}/>
         </Routes>
       </div>
     </Router>

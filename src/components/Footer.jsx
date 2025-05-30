@@ -1,116 +1,157 @@
-import React from 'react';
-import './styling/Footer.css'; // Create this CSS file
+import { FaFacebook, FaInstagram, FaTwitter, FaEnvelope, FaMapMarkerAlt, FaPhone } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
-    return (
-        <footer className="site-footer">
-            {/* Main Footer Content */}
-            <div className="footer-main">
-                <div className="container">
-                    <div className="row">
-                        {/* About Us Section */}
-                        <div className="col-lg-4 col-md-6 mb-4 mb-md-0">
-                            <div className="footer-about">
-                                <h5 className="footer-title">About Lupin's Crest</h5>
-                                <div className="footer-divider"></div>
-                                <p className="footer-text">
-                                    Lupin's Crest Luxury Real Estate is a distinguished boutique real estate company in Kenya, 
-                                    renowned for its commitment to sustainable and luxurious living. Our flagship development, 
-                                    Crest Estate, spans 1,360 acres near Nairobi, offering panoramic views of Nairobi City, 
-                                    the Nairobi National Park, and the Maasai Mara National Park.
-                                </p>
-                                <div className="eco-badge">
-                                    <i className="fas fa-leaf"></i> Sustainable Living
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Contact Form Section */}
-                        <div className="col-lg-4 col-md-6 mb-4 mb-md-0">
-                            <div className="footer-contact">
-                                <h5 className="footer-title">Reach Out To Us</h5>
-                                <div className="footer-divider"></div>
-                                <form className="footer-form">
-                                    <div className="form-group">
-                                        <input 
-                                            type="email" 
-                                            className="form-control footer-input" 
-                                            placeholder="Your email address"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <textarea 
-                                            className="form-control footer-input" 
-                                            rows="4" 
-                                            placeholder="Your message"
-                                            required
-                                        ></textarea>
-                                    </div>
-                                    <button type="submit" className="btn footer-btn">
-                                        Send Message <i className="fas fa-paper-plane ml-2"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-
-                        {/* Social Media Section */}
-                        <div className="col-lg-4 col-md-12">
-                            <div className="footer-social">
-                                <h5 className="footer-title">Connect With Us</h5>
-                                <div className="footer-divider"></div>
-                                <div className="social-icons">
-                                    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="social-icon">
-                                        <i className="fab fa-facebook-f"></i>
-                                    </a>
-                                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-icon">
-                                        <i className="fab fa-instagram"></i>
-                                    </a>
-                                    <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="social-icon">
-                                        <i className="fab fa-twitter"></i>
-                                    </a>
-                                    <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="social-icon">
-                                        <i className="fab fa-linkedin-in"></i>
-                                    </a>
-                                </div>
-                                
-                                <div className="contact-info mt-4">
-                                    <p className="footer-text">
-                                        <i className="fas fa-map-marker-alt mr-2"></i> 
-                                        Nairobi, Kenya
-                                    </p>
-                                    <p className="footer-text">
-                                        <i className="fas fa-phone mr-2"></i> 
-                                        +254 796299307
-                                    </p>
-                                    <p className="footer-text">
-                                        <i className="fas fa-envelope mr-2"></i> 
-                                        info@lupinscrest.com
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  return (
+    <div className="bg-dark text-light">
+      {/* Main Footer Content */}
+      <div className="container py-5">
+        <div className="row g-4">
+         
+          {/* --- About Us --- */}
+          <div className="col-lg-4 col-md-6">
+            <h4 className="text-primary mb-4 fw-bold border-bottom pb-2">
+              <span className="text-light">About</span> Lupin Real Estate
+            </h4>
+            <p className="text-warning">
+              Welcome to <span className="text-danger">Lupin Real Estate</span>, your trusted partner in property investment and management.
+              We specialize in helping clients find their dream homes, investment properties, and commercial spaces with unmatched professionalism.
+            </p>
+            <div className="mt-4">
+              <h6 className="text-light">Quick Links</h6>
+              <ul className="list-unstyled">
+                <li className="mb-2">
+                  <Link to="/" className="text-success hover-text-primary text-decoration-none">
+                    Home
+                  </Link>
+                </li>
+            
+                <li className="mb-2">
+                  <Link to="/addhouse" className="text-success hover-text-primary text-decoration-none">
+                    Add House
+                  </Link>
+                </li>
+                <li className="mb-2">
+                  <Link to="/aboutus" className="text-success hover-text-primary text-decoration-none">
+                    About Us
+                  </Link>
+                </li>
+              </ul>
             </div>
+          </div>
 
-            {/* Copyright Section */}
-            <div className="footer-copyright">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-md-12">
-                            <p className="copyright-text">
-                                &copy; {new Date().getFullYear()} Lupin's Crest Luxury Real Estate. All rights reserved.
-                                <span className="developer-credit">
-                                    Developed by <strong>Lupin </strong>
-                                </span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
+          {/* --- Contact Form --- */}
+          <div className="col-lg-4 col-md-6">
+            <h4 className="text-primary mb-4 fw-bold border-bottom pb-2">
+              Get In <span className="text-light">Touch</span>
+            </h4>
+            <form>
+              <div className="mb-3">
+                <input
+                  type="email"
+                  className="form-control bg-dark text-light border-secondary"
+                  placeholder="Enter Your Email here"
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <textarea
+                  className="form-control bg-transparent text-light border-secondary"
+                  rows="4"
+                  placeholder="Your Message"
+                  required
+                ></textarea>
+              </div>
+              <button
+                className="btn btn-primary w-100 fw-bold hover-grow"
+                type="submit"
+              >
+                Send Message <FaEnvelope className="ms-2" />
+              </button>
+            </form>
+            <div className="mt-4">
+              <div className="d-flex align-items-center mb-2">
+                <FaMapMarkerAlt className="text-primary me-3" />
+                <span className="text-danger">
+                  <a
+                    href="https://www.google.com/maps"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-danger text-decoration-none"
+                  >
+                    Nairobi, Kenya.
+                  </a>
+                </span>
+              </div>
+              <div className="d-flex align-items-center">
+                <FaPhone className="text-primary me-3" />
+                <span className="">(+254) 796 299 307</span>
+              </div>
             </div>
-        </footer>
-    );
+          </div>
+
+          {/* --- Social & Newsletter --- */}
+          <div className="col-lg-4 col-md-12">
+            <h4 className="text-primary mb-4 fw-bold border-bottom pb-2">
+              Follow <span className="text-light">Us</span>
+            </h4>
+            <div className="d-flex gap-3 mb-4">
+              <a
+                href="https://facebook.com/lupinrealestate"
+                className="social-icon hover-scale text-primary"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaFacebook size={30} />
+              </a>
+              <a
+                href="https://instagram.com/lupinrealestate"
+                className="social-icon hover-scale text-primary"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaInstagram size={30} />
+              </a>
+              <a
+                href="https://twitter.com/lupinrealestate"
+                className="social-icon hover-scale text-primary"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaTwitter size={30} />
+              </a>
+            </div>
+            <div className="mb-4">
+              <h6 className="text-light">Subscribe to Our Newsletter</h6>
+              <div className="input-group">
+                <input
+                  type="email"
+                  className="form-control bg-transparent text-light border-secondary"
+                  placeholder="Enter Email"
+                />
+                <button className="btn btn-outline-primary" type="button">
+                  Subscribe
+                </button>
+              </div>
+            </div>
+            <div className="">
+              <p>
+                Real estate isn't just about properties—it's about <span className="text-warning">building dreams, communities, and futures</span>.
+                Trust Lupin to guide you through every step of your property journey.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Copyright Footer */}
+      <footer className="bg-black py-3 text-center">
+        <p className="mb-0 text-light">
+          &copy; {new Date().getFullYear()} <span className="text-primary">Lupin </span>. All Rights Reserved.
+        </p>
+      </footer>
+    </div>
+  );
 };
 
 export default Footer;

@@ -130,7 +130,7 @@ const Addhouse = () => {
                     </div>
 
                     <div className="mb-4">
-                      <label className="form-label fw-bold">Price ($)</label>
+                      <label className="form-label fw-bold">Price (KES)</label>
                       <div className="input-group">
                         <span className="input-group-text">
                           <FaDollarSign />
