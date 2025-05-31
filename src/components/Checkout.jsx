@@ -35,92 +35,123 @@ const Checkout = () => {
     }));
   };
 
+  const formatPhoneNumber = (phone) => {
+    // Remove all non-digit characters
+    const digits = phone.replace(/\D/g, '');
+    
+    // Convert to 254 format if it starts with 0 or 254
+    if (digits.startsWith('0') && digits.length === 10) {
+      return '254' + digits.substring(1);
+    } else if (digits.startsWith('254') && digits.length === 12) {
+      return digits;
+    } else if (digits.length === 9) {
+      return '254' + digits;
+    }
+    return digits; // return as is if doesn't match expected patterns
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     setPaymentInitiated(false);
 
-    // Validate phone number format (Kenyan format)
-    if (!formData.phone.match(/^(?:254|\+254|0)?(7[0-9]{8})$/)) {
+    // Format and validate phone number
+    const formattedPhone = formatPhoneNumber(formData.phone);
+    if (!formattedPhone.match(/^2547[0-9]{8}$/)) {
       setError('Please enter a valid Kenyan phone number (e.g. 07XXXXXXXX or 2547XXXXXXXX)');
       setLoading(false);
       return;
     }
 
     try {
-      // Prepare checkout data
       const totals = calculateTotal();
-      const checkoutData = {
-        items: cartItems.map(item => ({
-          product_id: item.id,
-          product_name: item.product_name,
-          product_photo: item.product_photo,
-          quantity: 1,
-          price: item.product_cost,
-          description: item.description || ''
-        })),
+      const mpesaAmount = Math.ceil(parseFloat(totals.total)); // Round up to whole number
+      
+      // Prepare the order data
+      const orderData = {
         customer_info: {
-          ...formData,
-          phone: formData.phone.replace(/^(0|254|\+254)/, '254')
+          name: formData.name,
+          email: formData.email,
+          phone: formattedPhone
         },
-        payment_details: {
-          method: 'mpesa',
-          amount: totals.total,
-          currency: 'KES',
-          status: 'pending'
-        },
-        order_details: {
-          date: new Date().toISOString(),
-          status: 'processing',
-          ...totals
-        }
+        items: cartItems.map(item => ({
+          product_name: item.product_name,
+          quantity: 1,
+          price: item.product_cost
+        })),
+        total_amount: totals.total,
+        payment_method: 'mpesa'
       };
 
-      // Send to backend API
-      const response = await axios.post(
+      console.log('Submitting order:', orderData);
+      console.log('MPesa amount:', mpesaAmount);
+
+      // Step 1: Create the order
+      const orderResponse = await axios.post(
         'https://lup3n.pythonanywhere.com/api/orders',
-        checkoutData,
+        orderData,
         {
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}` // If using auth
+            'Content-Type': 'application/json'
           }
         }
       );
 
-      if (response.data.success) {
-        setPaymentInitiated(true);
-        
-        // Navigate to confirmation with complete order data
-        navigate('/confirmation', {
-          state: {
-            order: {
-              ...response.data.order,
-              customer: checkoutData.customer_info,
-              items: checkoutData.items,
-              payment: checkoutData.payment_details,
-              summary: checkoutData.order_details
-            },
-            paymentInitiated: true,
-            timestamp: new Date().toISOString()
-          }
-        });
-      } else {
-        setError(response.data.message || 'Payment initiation failed. Please try again.');
+      if (!orderResponse.data.success) {
+        throw new Error(orderResponse.data.message || 'Failed to create order');
       }
+
+      // Step 2: Initiate M-Pesa payment
+      const paymentFormData = new FormData();
+      paymentFormData.append('amount', mpesaAmount.toString());
+      paymentFormData.append('phone', formattedPhone);
+
+      console.log('Initiating M-Pesa payment with:', {
+        amount: mpesaAmount,
+        phone: formattedPhone
+      });
+
+      const paymentResponse = await axios.post(
+        'https://lup3n.pythonanywhere.com/api/mpesa_payment',
+        paymentFormData
+      );
+
+      if (!paymentResponse.data.success) {
+        throw new Error(paymentResponse.data.message || 'Payment initiation failed');
+      }
+
+      // If everything succeeded
+      setPaymentInitiated(true);
+      
+      // Navigate to confirmation
+      navigate('/confirmation', {
+        state: {
+          order: orderResponse.data.order,
+          payment: paymentResponse.data,
+          customer: orderData.customer_info,
+          items: orderData.items,
+          summary: {
+            subtotal: totals.subtotal,
+            tax: totals.tax,
+            total: mpesaAmount.toString() // Use the rounded amount
+          },
+          timestamp: new Date().toISOString()
+        }
+      });
+
     } catch (err) {
-      const errorMsg = err.response?.data?.error?.message || 
-                      err.response?.data?.message || 
-                      'Network error occurred. Please check your connection.';
-      setError(errorMsg);
-      console.error('Checkout error:', err);
+      console.error('Checkout error:', err.response?.data || err.message);
+      setError(err.response?.data?.message || 
+              err.message || 
+              'An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   const totals = calculateTotal();
+  const displayAmount = Math.ceil(parseFloat(totals.total)); // Rounded amount for display
 
   return (
     <div className="checkout-page bg-light">
@@ -161,8 +192,10 @@ const Checkout = () => {
                       </div>
                       <div className="col-md-6">
                         <h6 className="mb-1">{item.product_name}</h6>
-                        {item.description && (
-                          <small className="text-muted">{item.description.substring(0, 50)}...</small>
+                        {item.product_description && (
+                          <small className="text-muted">
+                            {item.product_description.substring(0, 50)}...
+                          </small>
                         )}
                       </div>
                       <div className="col-md-4 text-end">
@@ -276,7 +309,7 @@ const Checkout = () => {
                     ) : (
                       <>
                         <FaMobileAlt className="me-2" />
-                        Complete Purchase for KES {totals.total}
+                        Complete Purchase for KES {displayAmount.toLocaleString()}
                       </>
                     )}
                   </button>
@@ -302,7 +335,7 @@ const Checkout = () => {
                 <div className="d-flex justify-content-between mb-3 pt-3 border-top fw-bold fs-5">
                   <span>Total:</span>
                   <span className="text-success">
-                    KES {totals.total}
+                    KES {displayAmount.toLocaleString()}
                   </span>
                 </div>
                 

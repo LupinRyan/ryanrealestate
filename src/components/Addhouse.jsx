@@ -43,7 +43,12 @@ const Addhouse = () => {
       data.append("product_description", houseDescription);
       data.append("product_cost", houseCost);
       if (housePhoto) {
-        data.append("product_photo", housePhoto);
+        data.append("product_photo", housePhoto, housePhoto.name); // Added filename
+      }
+
+      // Debug: Log FormData contents
+      for (let [key, value] of data.entries()) {
+        console.log(key, value);
       }
 
       const response = await axios.post(
@@ -52,18 +57,25 @@ const Addhouse = () => {
         {
           headers: {
             'Content-Type': 'multipart/form-data'
-          }
+          },
+          // withCredentials: true // Uncomment if using session cookies
         }
       );
 
       setSuccess(response.data.message || "House added successfully!");
+      // Reset form
       setHouseName("");
       setHouseDescription("");
       setHouseCost("");
       setHousePhoto(null);
       setPreviewImage("");
     } catch (error) {
-      setError(error.response?.data?.message || "Failed to add house. Please try again.");
+      console.error("Full error:", error);
+      const errorMessage = error.response?.data?.error || 
+                         error.response?.data?.message || 
+                         error.message || 
+                         "Failed to add house. Please try again.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -138,7 +150,7 @@ const Addhouse = () => {
                         <input
                           type="number"
                           className="form-control form-control-lg"
-                          placeholder="Enter price per night"
+                          placeholder="Enter the price for the Property..."
                           value={houseCost}
                           onChange={(e) => setHouseCost(e.target.value)}
                           required

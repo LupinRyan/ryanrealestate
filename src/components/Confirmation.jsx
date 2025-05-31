@@ -8,8 +8,7 @@ import {
   FaEnvelope, 
   FaHome, 
   FaClock, 
-  FaReceipt, 
-  FaWhatsapp,
+  FaReceipt,
   FaUser 
 } from 'react-icons/fa';
 import { FiCopy } from 'react-icons/fi';
@@ -81,11 +80,7 @@ const Confirmation = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleWhatsAppContact = () => {
-    const message = `Hello, I have a question about my order #${order?.order_id}`;
-    const whatsappUrl = `https://wa.me/254YOURWHATSAPPNUMBER?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
-  };
+
 
   if (loading) {
     return (
@@ -111,6 +106,11 @@ const Confirmation = () => {
     );
   }
 
+  // Safely access nested properties
+  const customerName = order.customer_info?.name || 'Customer';
+  const customerEmail = order.customer_info?.email || 'Not provided';
+  const customerPhone = order.customer_info?.phone || 'Not provided';
+
   return (
     <div className="confirmation-page bg-light">
       <div className="container py-5">
@@ -123,7 +123,7 @@ const Confirmation = () => {
                 </div>
                 <h1 className="display-5 fw-bold mb-3">Order Confirmed!</h1>
                 <p className="lead mb-0">
-                  Thank you for your purchase, {order.customer_info.name}!
+                  Thank you for your purchase, {customerName}!
                 </p>
                 <div className="position-absolute top-0 end-0 p-3 bg-white text-success rounded-bl-lg">
                   <span className="fw-bold">#{order.order_id}</span>
@@ -143,24 +143,24 @@ const Confirmation = () => {
                           <li className="d-flex justify-content-between py-2 border-bottom">
                             <span>Status:</span>
                             <span className={`badge bg-${order.status === 'completed' ? 'success' : 'warning'}`}>
-                              {order.status.toUpperCase()}
+                              {order.status?.toUpperCase() || 'PENDING'}
                             </span>
                           </li>
                           <li className="d-flex justify-content-between py-2 border-bottom">
                             <span>Date:</span>
-                            <span>{new Date(order.created_at).toLocaleString()}</span>
+                            <span>{order.created_at ? new Date(order.created_at).toLocaleString() : 'Not available'}</span>
                           </li>
                           <li className="d-flex justify-content-between py-2 border-bottom">
                             <span>Items:</span>
-                            <span>{order.items.length}</span>
+                            <span>{order.items?.length || 0}</span>
                           </li>
                           <li className="d-flex justify-content-between py-2 border-bottom">
                             <span>Payment Method:</span>
-                            <span className="text-capitalize">{order.payment_method}</span>
+                            <span className="text-capitalize">{order.payment_method || 'Not specified'}</span>
                           </li>
                           <li className="d-flex justify-content-between py-2 fw-bold">
                             <span>Total Paid:</span>
-                            <span className="text-success">KES {order.total_amount.toLocaleString()}</span>
+                            <span className="text-success">KES {order.total_amount?.toLocaleString() || '0'}</span>
                           </li>
                         </ul>
                       </div>
@@ -177,25 +177,27 @@ const Confirmation = () => {
                         <ul className="list-unstyled">
                           <li className="d-flex align-items-center py-2 border-bottom">
                             <FaUser className="me-2 text-muted" />
-                            <span>{order.customer_info.name}</span>
+                            <span>{customerName}</span>
                           </li>
                           <li className="d-flex align-items-center py-2 border-bottom">
                             <FaEnvelope className="me-2 text-muted" />
-                            <span>{order.customer_info.email}</span>
+                            <span>{customerEmail}</span>
                           </li>
                           <li className="d-flex align-items-center py-2 border-bottom">
                             <FaPhone className="me-2 text-muted" />
                             <div className="d-flex justify-content-between w-100">
-                              <span>{order.customer_info.phone}</span>
-                              {copied ? (
-                                <span className="badge bg-success">Copied!</span>
-                              ) : (
-                                <button 
-                                  className="btn btn-sm btn-outline-secondary"
-                                  onClick={() => copyToClipboard(order.customer_info.phone)}
-                                >
-                                  <FiCopy size={14} />
-                                </button>
+                              <span>{customerPhone}</span>
+                              {customerPhone !== 'Not provided' && (
+                                copied ? (
+                                  <span className="badge bg-success">Copied!</span>
+                                ) : (
+                                  <button 
+                                    className="btn btn-sm btn-outline-secondary"
+                                    onClick={() => copyToClipboard(customerPhone)}
+                                  >
+                                    <FiCopy size={14} />
+                                  </button>
+                                )
                               )}
                             </div>
                           </li>
@@ -213,19 +215,19 @@ const Confirmation = () => {
                     </h5>
                   </div>
                   <div className="card-body">
-                    {order.items.map((item, index) => (
+                    {order.items?.map((item, index) => (
                       <div key={index} className="row align-items-center mb-3 pb-3 border-bottom">
                         <div className="col-2 col-md-1">
                           <span className="badge bg-light text-dark rounded-circle">
-                            {item.quantity}
+                            {item.quantity || 1}
                           </span>
                         </div>
                         <div className="col-6 col-md-7">
-                          <h6 className="mb-1">{item.product_name}</h6>
+                          <h6 className="mb-1">{item.product_name || 'Unknown Product'}</h6>
                         </div>
                         <div className="col-4 col-md-4 text-end">
                           <span className="text-dark fw-bold">
-                            KES {(item.price * item.quantity).toLocaleString()}
+                            KES {((item.price || 0) * (item.quantity || 1)).toLocaleString()}
                           </span>
                         </div>
                       </div>
@@ -265,8 +267,8 @@ const Confirmation = () => {
                     <div className="ms-3">
                       <h5 className="alert-heading">Payment Received!</h5>
                       <p className="mb-0">
-                        Your M-Pesa payment of KES {order.total_amount.toLocaleString()} has been received. 
-                        We'll notify you when your order ships.
+                        Your M-Pesa payment of KES {order.total_amount?.toLocaleString() || '0'} has been received. 
+                        We'll notify you so that you can enter your new property.
                       </p>
                     </div>
                   </div>
@@ -282,15 +284,7 @@ const Confirmation = () => {
                       Continue Shopping
                     </button>
                   </div>
-                  <div className="col-md-6">
-                    <button 
-                      className="btn btn-success w-100 py-3"
-                      onClick={handleWhatsAppContact}
-                    >
-                      <FaWhatsapp className="me-2" />
-                      Contact Support
-                    </button>
-                  </div>
+                  
                 </div>
               </div>
             </div>

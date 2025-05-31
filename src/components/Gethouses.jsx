@@ -21,27 +21,53 @@ const Gethouses = () => {
     setLoading("🔍 Scanning the galaxy for luxury homes...");
     try {
       const response = await axios.get("https://lup3n.pythonanywhere.com/api/getproducts");
-      setHouses(response.data);
+      
+      // Debugging: Log the API response
+      console.log("API Response:", response.data);
+      
+      // Handle different possible response structures
+      if (Array.isArray(response.data)) {
+        setHouses(response.data);
+      } else if (response.data && Array.isArray(response.data.products)) {
+        setHouses(response.data.products);
+      } else if (response.data && Array.isArray(response.data.data)) {
+        setHouses(response.data.data);
+      } else {
+        setHouses([]);
+        setError("Received unexpected data format from server");
+      }
+      
       setLoading("");
     } catch (error) {
       setLoading("");
       setError(error.message);
+      setHouses([]); // Ensure houses is always an array
+      console.error("API Error:", error);
     }
   }
 
   // EFFECT HOOK:
-  useEffect(() => { fetchHouses() }, []);
+  useEffect(() => { 
+    fetchHouses(); 
+  }, []);
 
   // ADD TO CART FUNCTION:
   const addToCart = (house) => {
-    setCartItems([...cartItems, house]);
+    if (house && typeof house === 'object') {
+      setCartItems(prevItems => [...prevItems, house]);
+    }
   };
 
-  // SEARCH FILTER:
-  const filtered_houses = houses.filter((item) =>
-    item.product_name.toLowerCase().includes(search.toLowerCase()) ||
-    item.product_description.toLowerCase().includes(search.toLowerCase())
-  );
+  // SAFE SEARCH FILTER:
+  const filtered_houses = Array.isArray(houses) 
+    ? houses.filter((item) => {
+        if (!item) return false;
+        const name = item.product_name ? item.product_name.toLowerCase() : '';
+        const desc = item.product_description ? item.product_description.toLowerCase() : '';
+        const searchTerm = search.toLowerCase();
+        return name.includes(searchTerm) || desc.includes(searchTerm);
+      })
+    : [];
 
   return (
     <div className="bg-light">
@@ -92,6 +118,7 @@ const Gethouses = () => {
         {error && (
           <div className="alert alert-danger text-center">
             <b>Error: {error}</b>
+            <p>Please check console for details</p>
           </div>
         )}
 
@@ -105,44 +132,48 @@ const Gethouses = () => {
         <div className="row g-4">
           {filtered_houses.length > 0 ? (
             filtered_houses.map((house) => (
-              <div className="col-md-4 col-lg-3" key={house.id}>
-                <div className="card h-100 shadow-sm border-0 overflow-hidden">
-                  <div className="position-relative">
-                    <img 
-                      src={img_url + house.product_photo} 
-                      alt={house.product_name} 
-                      className="card-img-top house-image"
-                    />
-                    <div className="price-badge">
-                      <span className="badge bg-warning text-dark">
-                        KES {house.product_cost}
-                      </span>
+              house && (
+                <div className="col-md-4 col-lg-3" key={house.id || Math.random()}>
+                  <div className="card h-100 shadow-sm border-0 overflow-hidden">
+                    <div className="position-relative">
+                      <img 
+                        src={img_url + (house.product_photo || 'default.jpg')} 
+                        alt={house.product_name || 'Property image'} 
+                        className="card-img-top house-image"
+                      />
+                      <div className="price-badge">
+                        <span className="badge bg-warning text-dark">
+                          KES {house.product_cost || 'N/A'}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  
-                  <div className="card-body d-flex flex-column">
-                    <h5 className="card-title text-primary">{house.product_name.slice(0, 30)}</h5>
-                    <p className="card-text text-muted flex-grow-1">
-                      {house.product_description.slice(0, 60)}...
-                    </p>
-                    <div className="d-flex justify-content-between mt-auto">
-                      <button 
-                        className="btn btn-buy-now"
-                        onClick={() => navigate("/makepayment", { state: { houses: house } })}
-                      >
-                        Buy Now!
-                      </button>
-                      <button 
-                        className="btn btn-add-to-cart"
-                        onClick={() => addToCart(house)}
-                      >
-                        <FaShoppingCart className="me-2" />
-                        Add to Cart
-                      </button>
+                    
+                    <div className="card-body d-flex flex-column">
+                      <h5 className="card-title text-primary">
+                        {(house.product_name || 'Untitled Property').slice(0, 30)}
+                      </h5>
+                      <p className="card-text text-muted flex-grow-1">
+                        {(house.product_description || 'No description available').slice(0, 60)}...
+                      </p>
+                      <div className="d-flex justify-content-between mt-auto">
+                        <button 
+                          className="btn btn-buy-now"
+                          onClick={() => navigate("/makepayment", { state: { houses: house } })}
+                        >
+                          View Details
+                        </button>
+                        <button 
+                          className="btn btn-add-to-cart"
+                          onClick={() => addToCart(house)}
+                        >
+                          <FaShoppingCart className="me-2" />
+                          Add to Cart
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )
             ))
           ) : (
             !loading && (
