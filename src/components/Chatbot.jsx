@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './styling/Chatbot.css';
 
 const Chatbot = () => {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([
     { text: "Hello! I'm Lupin Real Estate Bot - Your 24/7 Property Assistant. How can I help you today?", sender: 'bot' }
   ]);
@@ -125,7 +127,7 @@ const Chatbot = () => {
       "Which service are you interested in?"]],
     
     [/(.*thank|thanks|appreciate.*)/i, 
-     ["You're welcome! Remember to check our website for exclusive listings at lupinrealestate.vercel.app", 
+     ["You're welcome! Remember to check our website for exclusive listings at ryanrealestate.vercel.app", 
       "Happy to help! We're always available at +254 796 299307 for any further questions."]],
     
     [/(.*payment|plan|installment|flexible.*)/i,
@@ -141,7 +143,7 @@ const Chatbot = () => {
       "🎉 5% discount on cash purchases\n" +
       "🏡 Free legal fees on select properties\n" +
       "👨‍👩‍👧‍👦 Family packages with furniture credit\n" +
-      "View all offers at lupinrealestate.vercel.app/offers"]],
+      "View all offers at ryanrealestate.vercel.app/offers"]],
     
     [/.*/i, 
      ["I'm sorry, I didn't understand that. For real estate inquiries, you can ask about:\n" +
@@ -150,12 +152,12 @@ const Chatbot = () => {
       "- Pricing and payment plans\n" +
       "- Site visits\n" +
       "- Our services\n" +
-      "Or visit lupinrealestate.vercel.app for complete information"]]
+      "Or visit ryanrealestate.vercel.app for complete information"]]
   ];
 
   const findResponse = (input) => {
     if (input.toLowerCase() === 'quit') {
-      return "Thank you for choosing Lupin Real Estate! Remember to visit lupinrealestate.vercel.app for our full listings. Have a wonderful day!";
+      return "Thank you for choosing Lupin Real Estate! Remember to visit ryanrealestate.vercel.app for our full listings. Have a wonderful day!";
     }
 
     for (const [pattern, responses] of pairs) {
@@ -206,6 +208,16 @@ const Chatbot = () => {
             <h3>Lupin Real Estate Assistant</h3>
             <p className="status">Online</p>
           </div>
+          <button 
+            className="chatbot-close-btn" 
+            onClick={() => navigate('/')}
+            aria-label="Close chatbot"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+            </svg>
+            <span className="close-tooltip">Back to Home</span>
+          </button>
         </div>
         
         <div className="chatbot-messages">
