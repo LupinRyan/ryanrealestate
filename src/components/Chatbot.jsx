@@ -12,7 +12,7 @@ const Chatbot = () => {
 
   // Sample pairs of input-output for the Lupin Real Estate chatbot
   const pairs = [
-    [/(hi|hello|hey|yooh|holla|bonjour)/i, 
+    [/(hi|hello|hey|yooh|holla|bonjour|rada|senyor)/i, 
      ["Hello! Welcome to Lupin Real Estate - Your Trusted Property Partner in Kenya. How can I assist you today?", 
       "Hi there! Looking for a property or have any questions about our services?"]],
     
@@ -102,13 +102,13 @@ const Chatbot = () => {
       "Weekdays: 8:30AM - 5:30PM\n" +
       "Saturdays: 9AM - 2PM\n" +
       "You can:\n" +
-      "1. Book online at lupinrealestate.vercel.app/viewings\n" +
+      "1. Book online at ryanrealestate.vercel.app/viewings\n" +
       "2. Call +254 796 299307\n" +
       "3. Email bookings@lupinrealestate.com\n" +
       "When would you be available?"]],
     
     [/(.*website|site|online|portal.*)/i, 
-     ["Our official website lupinrealestate.vercel.app offers:\n" +
+     ["Our official website ryanrealestate.vercel.app offers:\n" +
       "🔍 Complete property listings with photos/virtual tours\n" +
       "📝 Online viewing requests\n" +
       "📈 Market insights and trends\n" +
